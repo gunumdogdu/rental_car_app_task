@@ -1,0 +1,109 @@
+name: flutter_base_project
+description: A new Flutter project.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 2.0.0+2
+
+environment:
+  flutter: 3.7.10
+  sdk: '>=3.0.6 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Core
+  intl: any
+  collection: any
+  shared_preferences: ^2.1.1
+  uuid: ^3.0.7
+  package_info_plus: ^4.0.1
+  url_launcher: ^6.1.11
+  async: ^2.11.0
+  device_info_plus: ^9.0.1
+  background_json_parser: ^1.0.4 # Json parse işlemini yapar
+  text_mask: ^1.0.4
+
+  # Network
+  http: ^0.13.5
+  connectivity: ^3.0.6
+  webview_flutter: ^4.2.1
+  socket_io_client: ^2.0.2
+  cached_network_image: ^3.2.3
+  android_id: ^0.3.3
+
+  # UI
+  cupertino_icons: ^1.0.5
+  flutter_svg: ^2.0.6
+  flutter_local_notifications: ^14.1.0
+  banner_image: ^1.0.7
+  overlay_kit: ^1.0.8
+
+  # Firebase
+  firebase_core: ^2.17.0
+  firebase_messaging: ^14.6.9
+  firebase_dynamic_links: ^5.3.4
+
+  # State manager
+  get: ^4.6.5
+
+  # Error handler
+  dop_logger:
+    git:
+      url: https://github.com/dophub/applogger.git
+      ref: prod-0801
+  lottie: ^2.6.0
+  image_picker: ^1.0.4
+  google_maps_flutter: ^2.5.0
+  geolocator: ^10.0.1
+  local_auth: ^2.1.7
+  get_storage: ^2.1.1
+  geocoding: ^2.1.0
+
+dev_dependencies:
+  # test_coverage: ^0.5.0
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: any
+  dart_code_metrics: ^5.5.1
+  build_runner:
+  flutter_gen_runner:
+
+dependency_overrides:
+  async: ^2.8.2
+
+flutter_gen:
+  output: lib/app/constants/assets
+  line_length: 120
+
+  integrations:
+    flutter_svg: true
+  fonts:
+    enabled: false
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/flags/
+    # - assets/illustrations/
+    - assets/icons/
+    - assets/gifs/
+
+  fonts:
+    - family: GreycliffCF
+      fonts:
+        - asset: assets/fonts/GreycliffCF-Light.ttf
+          weight: 300
+        - asset: assets/fonts/GreycliffCF-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/GreycliffCF-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/GreycliffCF-DemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/GreycliffCF-Bold.ttf
+          weight: 700
