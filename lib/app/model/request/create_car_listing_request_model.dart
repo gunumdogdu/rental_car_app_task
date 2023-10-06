@@ -13,7 +13,7 @@ String createCarListingRequestModelToJson(CreateCarListingRequestModel data) => 
 class CreateCarListingRequestModel {
   int? id;
   String? name;
-  int? price;
+  double? price;
   File? eventImage;
   double? latitude;
   double? longitude;
@@ -32,7 +32,7 @@ class CreateCarListingRequestModel {
   factory CreateCarListingRequestModel.fromJson(Map<String, dynamic> json) => CreateCarListingRequestModel(
         id: json["id"],
         name: json["name"],
-        price: json["price"],
+        price: json["price"]?.toDouble(),
         eventImage: json["eventImage"] != null ? File(json["eventImage"]) : null,
         latitude: json["latitude"]?.toDouble(),
         longitude: json["longitude"]?.toDouble(),

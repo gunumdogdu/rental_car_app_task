@@ -24,7 +24,7 @@ class Home extends GetView<HomeController> {
             ? const SizedBox.shrink()
             : Padding(
                 padding: const EdgeInsets.symmetric(vertical: paddingL, horizontal: paddingL),
-                child: ListView.separated(
+                child:Obx(()=> ListView.separated(
                     separatorBuilder: (context, index) => const SizedBox(
                           height: paddingM,
                         ),
@@ -101,7 +101,7 @@ class Home extends GetView<HomeController> {
                           ),
                         ),
                       );
-                    })),
+                    }))),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: controller.onTapFloating,

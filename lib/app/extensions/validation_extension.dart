@@ -25,6 +25,17 @@ extension StringExtenstion on String {
     return true;
   }
 
+  String? isValidPrice() {
+    RegExp regExp = RegExp(r'^\$?[0-9]+(\.[0-9]{1,2})?$');
+
+    if (isEmpty) {
+      return 'Price field can not be empty.';
+    } else if (!regExp.hasMatch(this)) {
+      return 'Please enter valid price.';
+    }
+    return null;
+  }
+
   //for validate phone numbers
   String? isTelNo() {
     String pattern = r'(^(?:[+0]9)?[0-9]{10}$)';

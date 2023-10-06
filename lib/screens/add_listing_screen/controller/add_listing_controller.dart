@@ -17,13 +17,15 @@ import 'package:flutter_base_project/app/mixin/state_bottom_sheet_mixin.dart';
 import 'package:flutter_base_project/app/model/request/create_car_listing_request_model.dart';
 import 'package:flutter_base_project/app/model/request/place_result_model.dart';
 import 'package:flutter_base_project/app/theme/color/app_colors.dart';
-import 'package:flutter_base_project/env.dart';
+import 'package:flutter_base_project/screens/home_screen/controller/home_controller.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:overlay_kit/overlay_kit.dart';
+
+import '../../../env.dart';
 
 class AddListingController extends GetxController with StateBottomSheetMixin {
   final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -249,6 +251,8 @@ class AddListingController extends GetxController with StateBottomSheetMixin {
     carListings.add(newListing);
     carListings = carListings;
     await saveListingsToLocal();
+
+    Get.find<HomeController>().onReady();
   }
 
   Future<void> saveListingsToLocal() async {
@@ -261,4 +265,6 @@ class AddListingController extends GetxController with StateBottomSheetMixin {
         .map((e) => CreateCarListingRequestModel.fromJson(jsonDecode(e)))
         .toList();
   }
+
+  
 }

@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_base_project/app/constants/enum/cache_key_enum.dart';
 import 'package:flutter_base_project/app/controllers/general/session_service.dart';
+import 'package:flutter_base_project/app/extensions/context_extension.dart';
 import 'package:flutter_base_project/app/libs/locale_manager/locale_manager.dart';
 import 'package:flutter_base_project/app/navigation/route/route.dart';
 import 'package:flutter_base_project/app/navigation/route/route_factory.dart';
@@ -13,6 +16,7 @@ import 'package:get/get.dart';
 import 'package:local_auth/local_auth.dart';
 
 import '../../../../app/components/message/error_message_dialog.dart';
+import '../../../../core/exception/app_exception.dart';
 
 class SplashController extends GetxController {
   final GlobalKey scaffoldKey = GlobalKey<ScaffoldState>();
@@ -39,12 +43,13 @@ class SplashController extends GetxController {
         statusBarBrightness: Brightness.dark,
       ),
     );
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    
+    // await Firebase.initializeApp(
+    //   options: DefaultFirebaseOptions.currentPlatform,
+    // );
 
-    await FirebaseMessaging.instance.requestPermission();
-    await FirebaseMessaging.instance.setAutoInitEnabled(true);
+    // await FirebaseMessaging.instance.requestPermission();
+    // await FirebaseMessaging.instance.setAutoInitEnabled(true);
     // final fcmToken = await FirebaseMessaging.instance.getToken();
     // log("FCMToken $fcmToken");
 
@@ -62,7 +67,20 @@ class SplashController extends GetxController {
     // LocaleManager.instance.clearAll();
     future.whenComplete(() async {
       try {
-        await authenticateWithBiometrics();
+
+        if(!await context.isInternetAvaible()){
+
+          throw AppException('No internet connection found.');
+        }
+
+        final LocalAuthentication localAuth = LocalAuthentication();
+        final bool canCheckBiometrics = await localAuth.canCheckBiometrics;
+        if(canCheckBiometrics){
+          final bool isBiometricSupported = await localAuth.isDeviceSupported();
+          if(isBiometricSupported){
+            await authenticateWithBiometrics();
+          }
+        }
 
         bool isLogin = LocaleManager.instance.getBoolValue(CacheKey.loggedIn) ?? false;
 
@@ -75,7 +93,11 @@ class SplashController extends GetxController {
             Navigator.pushNamedAndRemoveUntil(context, MainScreensEnum.loginScreen.path, (route) => false);
           }
         }
-      } catch (e) {
+      } on AppException catch (e){
+        tryAgainMessage(e.toString());
+      }
+      
+      catch (e) {
         debugPrint(e.toString());
         tryAgainMessage(AppLocalization.getLabels.defaultErrorMessage);
       }
@@ -84,12 +106,7 @@ class SplashController extends GetxController {
 
   Future<void> authenticateWithBiometrics() async {
     final LocalAuthentication localAuth = LocalAuthentication();
-    final bool canCheckBiometrics = await localAuth.canCheckBiometrics;
-
-    if (canCheckBiometrics) {
-      final bool isBiometricSupported = await localAuth.isDeviceSupported();
-      if (isBiometricSupported) {
-        try {
+    try {
           final bool isAuthenticated = await localAuth.authenticate(
             options: const AuthenticationOptions(biometricOnly: true, useErrorDialogs: true),
             localizedReason: 'Authenticate with Face ID',
@@ -101,12 +118,6 @@ class SplashController extends GetxController {
         } catch (e) {
           throw Exception('Biometric authentication error: $e');
         }
-      } else {
-        throw Exception('Biometrics not supported on this device.');
-      }
-    } else {
-      throw Exception('Biometrics not available.');
-    }
   }
 
   /// Tekrar yükle popup

@@ -18,6 +18,7 @@ import 'package:flutter_base_project/app/theme/color/app_colors.dart';
 import 'package:flutter_base_project/app/theme/text_style/text_style.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 import '../controller/add_listing_controller.dart';
 
@@ -97,7 +98,8 @@ class AddListing extends GetView<AddListingController> {
                           CustomTextFormField(
                             controller: controller.cPrice,
                             textInputAction: TextInputAction.next,
-                            validator: (_) => controller.cPrice.text.isNotEmptyController(),
+                            textInputType: const TextInputType.numberWithOptions(),
+                            validator: (_) => controller.cPrice.text.replaceAll(',', '.').isValidPrice(),
                             hintText: ' \$25',
                           ),
                           const SizedBox(height: paddingM),
@@ -127,14 +129,14 @@ class AddListing extends GetView<AddListingController> {
                                 if (controller.fKey.currentState?.validate() ?? false) {
                                   final newListing = CreateCarListingRequestModel(
                                       name: controller.cModel.text,
-                                      price: int.tryParse(controller.cPrice.text),
+                                      price: double.tryParse(controller.cPrice.text.replaceAll(',', '.')) ?? 9.90,
                                       availability: controller.avaliability,
-                                      id: Random().nextInt(999),
+                                      id: int.tryParse(const Uuid().v4()) ?? Random().nextInt(999),
                                       latitude: controller.selectedPlace!.latitude,
                                       longitude: controller.selectedPlace!.longitude,
                                       eventImage: controller.selectedImage);
                                   await controller.addAndSaveListing(newListing);
-                                  Navigator.pushNamed(context, MainScreensEnum.homeScreen.path);
+                                  Navigator.pop(context, MainScreensEnum.homeScreen.path);
                                 }
                               },
                               text: 'Save Listing',
