@@ -22,32 +22,38 @@ class Login extends GetView<LoginController> {
           padding: const EdgeInsets.all(paddingXL),
           child: Form(
             key: controller.fKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 300),
-                Text(AppLocalization.getLabels.email, style: s20W300Dark),
-                const SizedBox(height: paddingXS),
-                CustomTextFormField(
-                  controller: controller.cEmail,
-                  validator: (_) => controller.cEmail.text.isMail(),
-                  textInputAction: TextInputAction.next,
-                  textInputType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: paddingS),
-                Text(AppLocalization.getLabels.password, style: s20W300Dark),
-                const SizedBox(height: paddingXS),
-                CustomTextFormField(
-                  controller: controller.cPassword,
-                  validator: (_) => controller.cPassword.text.isNotEmptyController(),
-                  textInputAction: TextInputAction.done,
-                  textInputType: TextInputType.visiblePassword,
-                  onFieldSubmitted: (_) => controller.onTapLoginWithEmailPassword,
-                  obscureText: true,
-                ),
-                const SizedBox(height: paddingXL),
-                BaseButton(onPressed: controller.onTapLoginWithEmailPassword, text: AppLocalization.getLabels.login)
-              ],
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 300),
+                  Text(AppLocalization.getLabels.email, style: s20W300Dark),
+                  const SizedBox(height: paddingXS),
+                  CustomTextFormField(
+                    controller: controller.cEmail,
+                    validator: (_) => controller.cEmail.text.isMail(),
+                    textInputAction: TextInputAction.next,
+                    textInputType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: paddingS),
+                  Text(AppLocalization.getLabels.password, style: s20W300Dark),
+                  const SizedBox(height: paddingXS),
+                  CustomTextFormField(
+                    controller: controller.cPassword,
+                    validator: (_) =>
+                        controller.cPassword.text.isNotEmptyController(),
+                    textInputAction: TextInputAction.done,
+                    textInputType: TextInputType.visiblePassword,
+                    onFieldSubmitted: (_) =>
+                        controller.onTapLoginWithEmailPassword,
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: paddingXL),
+                  BaseButton(
+                      onPressed: controller.onTapLoginWithEmailPassword,
+                      text: AppLocalization.getLabels.login)
+                ],
+              ),
             ),
           ),
         ),

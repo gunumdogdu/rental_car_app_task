@@ -1,13 +1,14 @@
 {
   "project_info": {
-    "project_number": "704768357263",
-    "project_id": "rental-car-app-b8437",
-    "storage_bucket": "rental-car-app-b8437.appspot.com"
+    "project_number": "974928018162",
+    "firebase_url": "https://rental-task-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "rental-task",
+    "storage_bucket": "rental-task.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:704768357263:android:352be289c66b7d71c991fa",
+        "mobilesdk_app_id": "1:974928018162:android:f59bc422e17c077abdae6b",
         "android_client_info": {
           "package_name": "task.rental_car_app"
         }
@@ -15,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBnpxscjPmONEH7_SZ4r7segIYna0YC7X8"
+          "current_key": "AIzaSyDkHlOisZ-qC91sWUYMX5z_loE1mWl8284"
         }
       ],
       "services": {

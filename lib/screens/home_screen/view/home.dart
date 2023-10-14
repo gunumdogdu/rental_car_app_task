@@ -21,83 +21,112 @@ class Home extends GetView<HomeController> {
       ),
       body: Obx(
         () => controller.loadingStatus != LoadingStatus.Loaded
-            ? const SizedBox.shrink()
+            ? const CircularProgressIndicator.adaptive()
             : Padding(
-                padding: const EdgeInsets.symmetric(vertical: paddingL, horizontal: paddingL),
-                child:Obx(()=> ListView.separated(
+                padding: const EdgeInsets.symmetric(
+                    vertical: paddingL, horizontal: paddingL),
+                child: Obx(() => ListView.separated(
                     separatorBuilder: (context, index) => const SizedBox(
                           height: paddingM,
                         ),
                     itemCount: controller.carListings.length,
                     itemBuilder: (context, index) {
                       final item = controller.carListings[index];
-                      return GestureDetector(
-                        onTap: () => controller.onTapListing(item.id!),
-                        child: Card(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusM)),
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: paddingXS, horizontal: paddingM),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(radiusM),
-                                  child: Hero(
-                                    tag: UniqueKey(),
-                                    child: CachedNetworkImage(
-                                      imageUrl: 'https://thispersondoesnotexist.com/',
-                                      height: 130.horizontalScale,
-                                      fit: BoxFit.cover,
+                      return Dismissible(
+                        key: Key(item.id.toString()),
+                        background: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: paddingL),
+                          child: const Icon(Icons.delete, color: Colors.white),
+                        ),
+                        onDismissed: (direction) =>
+                            controller.deleteListing(item.id!),
+                        child: GestureDetector(
+                          onTap: () => controller.onTapListing(item.id!),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(radiusM)),
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: paddingXS,
+                                      horizontal: paddingM),
+                                  child: ClipRRect(
+                                    borderRadius:
+                                        BorderRadius.circular(radiusM),
+                                    child: Hero(
+                                      tag:
+                                          'car_image_${controller.carListings[index].id}',
+                                      child: CachedNetworkImage(
+                                        imageUrl: item.eventImage!,
+                                        progressIndicatorBuilder:
+                                            (context, url, progress) =>
+                                                const Center(
+                                          child: CircularProgressIndicator
+                                              .adaptive(),
+                                        ),
+                                        height: 140.horizontalScale,
+                                        width: 130.horizontalScale,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              Flexible(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.car_repair),
-                                        const SizedBox(width: paddingXS),
-                                        Flexible(
-                                          child: Text(
-                                            controller.carListings[index].name!,
+                                Flexible(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.car_repair),
+                                          const SizedBox(width: paddingXS),
+                                          Flexible(
+                                            child: Text(
+                                              controller
+                                                  .carListings[index].name!,
+                                              style: s14W500Dark,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: paddingM),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.price_check_rounded),
+                                          const SizedBox(width: paddingXS),
+                                          Text(
+                                              '\$ ${controller.carListings[index].price}',
+                                              style: s14W500Dark),
+                                        ],
+                                      ),
+                                      const SizedBox(height: paddingM),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                              Icons.location_on_outlined),
+                                          const SizedBox(width: paddingXS),
+                                          Flexible(
+                                              child: Text(
+                                            controller.addresses[index],
                                             style: s14W500Dark,
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 2,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: paddingM),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.price_check_rounded),
-                                        const SizedBox(width: paddingXS),
-                                        Text('\$ ${controller.carListings[index].price}', style: s14W500Dark),
-                                      ],
-                                    ),
-                                    const SizedBox(height: paddingM),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.location_on_outlined),
-                                        const SizedBox(width: paddingXS),
-                                        Flexible(
-                                            child: Text(
-                                          controller.addresses[index],
-                                          style: s14W500Dark,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 2,
-                                        )),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
+                                          )),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       );

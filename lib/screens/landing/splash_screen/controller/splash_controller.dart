@@ -43,10 +43,6 @@ class SplashController extends GetxController {
         statusBarBrightness: Brightness.dark,
       ),
     );
-    
-    // await Firebase.initializeApp(
-    //   options: DefaultFirebaseOptions.currentPlatform,
-    // );
 
     // await FirebaseMessaging.instance.requestPermission();
     // await FirebaseMessaging.instance.setAutoInitEnabled(true);
@@ -67,37 +63,42 @@ class SplashController extends GetxController {
     // LocaleManager.instance.clearAll();
     future.whenComplete(() async {
       try {
-
-        if(!await context.isInternetAvaible()){
-
+        if (!await context.isInternetAvaible()) {
           throw AppException('No internet connection found.');
         }
 
+        await Firebase.initializeApp(
+          name: Platform.isAndroid ? null : 'rental-task',
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+
         final LocalAuthentication localAuth = LocalAuthentication();
         final bool canCheckBiometrics = await localAuth.canCheckBiometrics;
-        if(canCheckBiometrics){
+        if (canCheckBiometrics) {
           final bool isBiometricSupported = await localAuth.isDeviceSupported();
-          if(isBiometricSupported){
+          if (isBiometricSupported) {
             await authenticateWithBiometrics();
           }
         }
 
-        bool isLogin = LocaleManager.instance.getBoolValue(CacheKey.loggedIn) ?? false;
+        bool isLogin =
+            LocaleManager.instance.getBoolValue(CacheKey.loggedIn) ?? false;
 
         if (isLogin) {
-          Navigator.pushNamedAndRemoveUntil(MyRouteFactory.context, MainScreensEnum.homeScreen.path, (route) => false);
+          Navigator.pushNamedAndRemoveUntil(MyRouteFactory.context,
+              MainScreensEnum.homeScreen.path, (route) => false);
         } else {
           if (sessionService.isUserLogin()) {
-            Navigator.pushNamedAndRemoveUntil(context, MainScreensEnum.homeScreen.path, (route) => false);
+            Navigator.pushNamedAndRemoveUntil(
+                context, MainScreensEnum.homeScreen.path, (route) => false);
           } else {
-            Navigator.pushNamedAndRemoveUntil(context, MainScreensEnum.loginScreen.path, (route) => false);
+            Navigator.pushNamedAndRemoveUntil(
+                context, MainScreensEnum.loginScreen.path, (route) => false);
           }
         }
-      } on AppException catch (e){
+      } on AppException catch (e) {
         tryAgainMessage(e.toString());
-      }
-      
-      catch (e) {
+      } catch (e) {
         debugPrint(e.toString());
         tryAgainMessage(AppLocalization.getLabels.defaultErrorMessage);
       }
@@ -107,17 +108,18 @@ class SplashController extends GetxController {
   Future<void> authenticateWithBiometrics() async {
     final LocalAuthentication localAuth = LocalAuthentication();
     try {
-          final bool isAuthenticated = await localAuth.authenticate(
-            options: const AuthenticationOptions(biometricOnly: true, useErrorDialogs: true),
-            localizedReason: 'Authenticate with Face ID',
-          );
+      final bool isAuthenticated = await localAuth.authenticate(
+        options: const AuthenticationOptions(
+            biometricOnly: true, useErrorDialogs: true),
+        localizedReason: 'Authenticate with Face ID',
+      );
 
-          if (!isAuthenticated) {
-            throw Exception('Biometric authentication failed.');
-          }
-        } catch (e) {
-          throw Exception('Biometric authentication error: $e');
-        }
+      if (!isAuthenticated) {
+        throw Exception('Biometric authentication failed.');
+      }
+    } catch (e) {
+      throw Exception('Biometric authentication error: $e');
+    }
   }
 
   /// Tekrar yükle popup

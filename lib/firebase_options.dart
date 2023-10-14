@@ -50,19 +50,21 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBnpxscjPmONEH7_SZ4r7segIYna0YC7X8',
-    appId: '1:704768357263:android:352be289c66b7d71c991fa',
-    messagingSenderId: '704768357263',
-    projectId: 'rental-car-app-b8437',
-    storageBucket: 'rental-car-app-b8437.appspot.com',
+    apiKey: 'AIzaSyDkHlOisZ-qC91sWUYMX5z_loE1mWl8284',
+    appId: '1:974928018162:android:f59bc422e17c077abdae6b',
+    messagingSenderId: '974928018162',
+    projectId: 'rental-task',
+    databaseURL: 'https://rental-task-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'rental-task.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCvfAyAahIGNmOjW-qJzxp-uOWXeWzaGBQ',
-    appId: '1:704768357263:ios:795d706fa6e81d50c991fa',
-    messagingSenderId: '704768357263',
-    projectId: 'rental-car-app-b8437',
-    storageBucket: 'rental-car-app-b8437.appspot.com',
+    apiKey: 'AIzaSyCCX12-c71smvGh8tdt3JukMghkYHgPhVo',
+    appId: '1:974928018162:ios:6eb40e890f993d43bdae6b',
+    messagingSenderId: '974928018162',
+    projectId: 'rental-task',
+    databaseURL: 'https://rental-task-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'rental-task.appspot.com',
     iosBundleId: 'com.example.sbcli.flutterBaseProject.RunnerTests',
   );
 }

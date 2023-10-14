@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyCvfAyAahIGNmOjW-qJzxp-uOWXeWzaGBQ</string>
+	<string>AIzaSyCCX12-c71smvGh8tdt3JukMghkYHgPhVo</string>
 	<key>GCM_SENDER_ID</key>
-	<string>704768357263</string>
+	<string>974928018162</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.example.sbcli.flutterBaseProject.RunnerTests</string>
 	<key>PROJECT_ID</key>
-	<string>rental-car-app-b8437</string>
+	<string>rental-task</string>
 	<key>STORAGE_BUCKET</key>
-	<string>rental-car-app-b8437.appspot.com</string>
+	<string>rental-task.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:704768357263:ios:795d706fa6e81d50c991fa</string>
+	<string>1:974928018162:ios:6eb40e890f993d43bdae6b</string>
+	<key>DATABASE_URL</key>
+	<string>https://rental-task-default-rtdb.europe-west1.firebasedatabase.app</string>
 </dict>
 </plist>

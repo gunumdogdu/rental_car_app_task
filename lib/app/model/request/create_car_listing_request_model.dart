@@ -8,13 +8,14 @@ import 'dart:io';
 CreateCarListingRequestModel createCarListingRequestModelFromJson(String str) =>
     CreateCarListingRequestModel.fromJson(json.decode(str));
 
-String createCarListingRequestModelToJson(CreateCarListingRequestModel data) => json.encode(data.toJson());
+String createCarListingRequestModelToJson(CreateCarListingRequestModel data) =>
+    json.encode(data.toJson());
 
 class CreateCarListingRequestModel {
-  int? id;
+  String? id;
   String? name;
   double? price;
-  File? eventImage;
+  String? eventImage;
   double? latitude;
   double? longitude;
   String? availability;
@@ -29,11 +30,12 @@ class CreateCarListingRequestModel {
     this.availability,
   });
 
-  factory CreateCarListingRequestModel.fromJson(Map<String, dynamic> json) => CreateCarListingRequestModel(
+  factory CreateCarListingRequestModel.fromJson(Map<String, dynamic> json) =>
+      CreateCarListingRequestModel(
         id: json["id"],
         name: json["name"],
         price: json["price"]?.toDouble(),
-        eventImage: json["eventImage"] != null ? File(json["eventImage"]) : null,
+        eventImage: json["eventImage"],
         latitude: json["latitude"]?.toDouble(),
         longitude: json["longitude"]?.toDouble(),
         availability: json["availability"],
@@ -43,7 +45,7 @@ class CreateCarListingRequestModel {
         "id": id,
         "name": name,
         "price": price,
-        "eventImage": eventImage?.path,
+        "eventImage": eventImage,
         "latitude": latitude,
         "longitude": longitude,
         "availability": availability,

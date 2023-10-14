@@ -1,7 +1,7 @@
 {
   "file_generated_by": "FlutterFire CLI",
   "purpose": "FirebaseAppID & ProjectID for this Firebase app in this directory",
-  "GOOGLE_APP_ID": "1:704768357263:ios:795d706fa6e81d50c991fa",
-  "FIREBASE_PROJECT_ID": "rental-car-app-b8437",
-  "GCM_SENDER_ID": "704768357263"
+  "GOOGLE_APP_ID": "1:974928018162:ios:6eb40e890f993d43bdae6b",
+  "FIREBASE_PROJECT_ID": "rental-task",
+  "GCM_SENDER_ID": "974928018162"
 }

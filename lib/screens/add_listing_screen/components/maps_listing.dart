@@ -29,7 +29,10 @@ class _Maps extends StatelessWidget {
           },
           myLocationEnabled: false,
           myLocationButtonEnabled: false,
-          gestureRecognizers: {Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer())},
+          gestureRecognizers: {
+            Factory<OneSequenceGestureRecognizer>(
+                () => EagerGestureRecognizer())
+          },
           markers: Set<Marker>.of(controller.markers),
           padding: const EdgeInsets.only(bottom: paddingXXXXXL),
           onMapCreated: (GoogleMapController e) async {

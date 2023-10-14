@@ -20,7 +20,7 @@ class ListingDetail extends GetView<ListingDetailController> {
 
   @override
   Widget build(BuildContext context) {
-    CreateCarListingRequestModel? findCarListingById(int id) {
+    CreateCarListingRequestModel? findCarListingById(String id) {
       return controller.carListings.firstWhere((listing) => listing.id == id);
     }
 
@@ -38,10 +38,14 @@ class ListingDetail extends GetView<ListingDetailController> {
                         Hero(
                           tag: controller.id,
                           child: CachedNetworkImage(
-                            imageUrl: 'https://thispersondoesnotexist.com/',
-                            progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
-                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                            imageUrl:
+                                findCarListingById(controller.id)!.eventImage!,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) => Center(
+                                    child: CircularProgressIndicator(
+                                        value: downloadProgress.progress)),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
                             fit: BoxFit.cover,
                             width: SizeConfig.screenWidth,
                             height: SizeConfig.screenWidth,
@@ -53,7 +57,9 @@ class ListingDetail extends GetView<ListingDetailController> {
                           child: CircleAvatar(
                             backgroundColor: AppColors.azureishWhite,
                             radius: 20.horizontalScale,
-                            child: IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.cancel)),
+                            child: IconButton(
+                                onPressed: () => Navigator.pop(context),
+                                icon: const Icon(Icons.cancel)),
                           ),
                         )
                       ],
@@ -65,7 +71,8 @@ class ListingDetail extends GetView<ListingDetailController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            findCarListingById(controller.id)?.name ?? 'Not Found',
+                            findCarListingById(controller.id)?.name ??
+                                'Not Found',
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             style: s26W600Dark,
@@ -73,19 +80,23 @@ class ListingDetail extends GetView<ListingDetailController> {
                           const SizedBox(height: paddingM),
                           ListingInfoTile(
                             icon: Icons.abc,
-                            text: '\$ ${findCarListingById(controller.id)!.price}',
+                            text:
+                                '\$ ${findCarListingById(controller.id)!.price}',
                             textStyle: s14W400Dark,
                           ),
                           const SizedBox(height: paddingXS),
                           ListingInfoTile(
                             icon: Icons.abc,
-                            text: controller.addresses[controller.id] ?? 'Address not found',
+                            text: controller.addresses[controller.id] ??
+                                'Address not found',
                             textStyle: s14W300Dark,
                           ),
                           const SizedBox(height: paddingXS),
                           ListingInfoTile(
                             icon: Icons.abc,
-                            text: findCarListingById(controller.id)?.availability ?? 'Not Found',
+                            text: findCarListingById(controller.id)
+                                    ?.availability ??
+                                'Not Found',
                             textStyle: s14W300Dark,
                           ),
                           const Divider(height: paddingXXXXXL),
@@ -94,12 +105,16 @@ class ListingDetail extends GetView<ListingDetailController> {
                             width: double.infinity,
                             child: GoogleMap(
                               initialCameraPosition: CameraPosition(
-                                target: LatLng(findCarListingById(controller.id)!.latitude!,
-                                    findCarListingById(controller.id)!.longitude!),
+                                target: LatLng(
+                                    findCarListingById(controller.id)!
+                                        .latitude!,
+                                    findCarListingById(controller.id)!
+                                        .longitude!),
                                 zoom: 12.0,
                               ),
                               gestureRecognizers: {
-                                Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer())
+                                Factory<OneSequenceGestureRecognizer>(
+                                    () => EagerGestureRecognizer())
                               },
                               markers: Set.from(controller.markers),
                               myLocationEnabled: true,

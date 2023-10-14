@@ -1,15 +1,18 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_base_project/app/animation/bottom_to_top_page_route.dart';
 import 'package:flutter_base_project/app/constants/enum/cache_key_enum.dart';
+import 'package:flutter_base_project/app/constants/enum/general_enum.dart';
 import 'package:flutter_base_project/app/constants/enum/loading_status_enum.dart';
 import 'package:flutter_base_project/app/libs/locale_manager/locale_manager.dart';
 import 'package:flutter_base_project/app/mixin/state_bottom_sheet_mixin.dart';
 import 'package:flutter_base_project/app/model/request/create_car_listing_request_model.dart';
 import 'package:flutter_base_project/app/navigation/route/route.dart';
 import 'package:flutter_base_project/app/navigation/route/route_factory.dart';
+import 'package:flutter_base_project/core/services/firestore_service.dart';
 import 'package:flutter_base_project/screens/listing_detail_screen/listing_detail_screen.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
@@ -48,13 +51,15 @@ class HomeController extends GetxController with StateBottomSheetMixin {
     try {
       loadingStatus = LoadingStatus.Loading;
       LoadingProgress.start();
-      await loadListingsFromLocal();
+      carListings = await General().getAllListingsFromFirestore();
+      await fetchLocationNamesForEvents(carListings);
       LoadingProgress.stop();
       loadingStatus = LoadingStatus.Loaded;
     } catch (e) {
       LoadingProgress.stop();
       loadingStatus = LoadingStatus.Error;
-      showErrorStateBottomSheet(message: e.toString(), onTapFirstBtn: onTapTryAgain);
+      showErrorStateBottomSheet(
+          message: e.toString(), onTapFirstBtn: onTapTryAgain);
     }
   }
 
@@ -63,29 +68,14 @@ class HomeController extends GetxController with StateBottomSheetMixin {
     onReady();
   }
 
-  Future<void> saveListingsToStorage() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('carListings', json.encode(carListings.map((listing) => listing.toJson()).toList()));
-  }
+  void onTapFloating() => Navigator.pushNamed(
+      MyRouteFactory.context, MainScreensEnum.addListingScreen.path);
 
-  void addAndSaveListing(CreateCarListingRequestModel newListing) {
-    carListings.add(newListing);
-    saveListingsToStorage();
-  }
-
-  void onTapFloating() => Navigator.pushNamed(MyRouteFactory.context, MainScreensEnum.addListingScreen.path);
-
-  Future<void> loadListingsFromLocal() async {
-    carListings = localeManager
-        .getStringListValue(CacheKey.cars)
-        .map((e) => CreateCarListingRequestModel.fromJson(jsonDecode(e)))
-        .toList();
-    await fetchLocationNamesForEvents(carListings);
-  }
-
-  Future<String> getAddressFromCoordinates(double latitude, double longitude) async {
+  Future<String> getAddressFromCoordinates(
+      double latitude, double longitude) async {
     try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(latitude, longitude);
       if (placemarks.isNotEmpty) {
         Placemark placemark = placemarks.first;
         return placemark.name ?? '';
@@ -96,11 +86,13 @@ class HomeController extends GetxController with StateBottomSheetMixin {
     return 'Unknown location';
   }
 
-  Future<void> fetchLocationNamesForEvents(List<CreateCarListingRequestModel> listings) async {
+  Future<void> fetchLocationNamesForEvents(
+      List<CreateCarListingRequestModel> listings) async {
     List<String> names = [];
     for (var listing in listings) {
       try {
-        String locationName = await getAddressFromCoordinates(listing.latitude!, listing.longitude!);
+        String locationName = await getAddressFromCoordinates(
+            listing.latitude!, listing.longitude!);
         names.add(locationName);
       } catch (e) {
         log('Error fetching location name for listing: ${listing.name}, Error: $e');
@@ -111,11 +103,24 @@ class HomeController extends GetxController with StateBottomSheetMixin {
     log('Addresses after conversion: $addresses');
   }
 
-  void onTapListing(int id) {
+  void onTapListing(String id) {
     Navigator.of(context).push(BottomToTopPageRoute(
         builder: (context) {
           return const ListingDetailScreen();
         },
         settings: RouteSettings(arguments: id)));
+  }
+
+  Future<void> deleteListing(String id) async {
+    try {
+      print('Deleting listing with ID: $id');
+      await General().deleteListingFromFirestore(id.toString());
+      carListings.removeWhere((listing) => listing.id == id);
+      await fetchLocationNamesForEvents(carListings);
+    } catch (e) {
+      log('Error deleting listing: $e');
+      showErrorStateBottomSheet(
+          message: 'Error deleting listing: $e', onTapFirstBtn: onTapTryAgain);
+    }
   }
 }

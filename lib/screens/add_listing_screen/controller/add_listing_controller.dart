@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:math';
+
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -16,7 +18,10 @@ import 'package:flutter_base_project/app/libs/locale_manager/locale_manager.dart
 import 'package:flutter_base_project/app/mixin/state_bottom_sheet_mixin.dart';
 import 'package:flutter_base_project/app/model/request/create_car_listing_request_model.dart';
 import 'package:flutter_base_project/app/model/request/place_result_model.dart';
+import 'package:flutter_base_project/app/navigation/route/route.dart';
 import 'package:flutter_base_project/app/theme/color/app_colors.dart';
+import 'package:flutter_base_project/core/services/firestore_service.dart';
+import 'package:flutter_base_project/core/services/firestore_storage.dart';
 import 'package:flutter_base_project/screens/home_screen/controller/home_controller.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -24,6 +29,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:overlay_kit/overlay_kit.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../env.dart';
 
@@ -40,7 +46,6 @@ class AddListingController extends GetxController with StateBottomSheetMixin {
   final picker = ImagePicker();
   final Rx<File?> _selectedImage = Rx(null);
   PlaceResult? selectedPlace;
-
   RxSet<Marker> markers = <Marker>{}.obs;
   LatLng? currentLocation;
   Uint8List? customMarkerOwn;
@@ -48,6 +53,9 @@ class AddListingController extends GetxController with StateBottomSheetMixin {
   final Rx<List<CreateCarListingRequestModel>> _carListings = Rx([]);
   final Rx<String?> _avaliability = Rx(null);
   final Rx<LoadingStatus> _loadingStatus = Rx(LoadingStatus.Init);
+  // final FirestoreService _firestoreService = FirestoreService();
+  final FirestoreStorageService _firestoreStorageService =
+      FirestoreStorageService();
 
   String? get avaliability => _avaliability.value;
   set avaliability(String? value) => _avaliability.value = value;
@@ -72,19 +80,17 @@ class AddListingController extends GetxController with StateBottomSheetMixin {
     try {
       loadingStatus = LoadingStatus.Loading;
       LoadingProgress.start();
-
       await findMyLocation();
-
       await initializeLocation();
       await loadListingsFromLocal();
       await loadCustomMarkerOwn();
-
       LoadingProgress.stop();
       loadingStatus = LoadingStatus.Loaded;
     } catch (e) {
       LoadingProgress.stop();
       loadingStatus = LoadingStatus.Error;
-      showErrorStateBottomSheet(message: e.toString(), onTapFirstBtn: onTapTryAgain);
+      showErrorStateBottomSheet(
+          message: e.toString(), onTapFirstBtn: onTapTryAgain);
     }
   }
 
@@ -116,7 +122,8 @@ class AddListingController extends GetxController with StateBottomSheetMixin {
         Navigator.pop(context);
         onTapPickImage(ImageSource.gallery);
       },
-    ).openBottomSheet(context: context, backgroundColor: AppColors.azureishWhite);
+    ).openBottomSheet(
+        context: context, backgroundColor: AppColors.azureishWhite);
   }
 
   Future<void> onTapPickImage(ImageSource imageSource) async {
@@ -127,7 +134,9 @@ class AddListingController extends GetxController with StateBottomSheetMixin {
         selectedImage = imageFile;
       }
     } catch (e) {
-      OverlayToastMessage.show(textMessage: 'AppLocalization.getLabels.anErrorOccuredWhileUploadingImage');
+      OverlayToastMessage.show(
+          textMessage:
+              'AppLocalization.getLabels.anErrorOccuredWhileUploadingImage');
     }
   }
 
@@ -146,11 +155,11 @@ class AddListingController extends GetxController with StateBottomSheetMixin {
           infoWindow: const InfoWindow(
             title: 'Selected Place',
           ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
         ),
       );
     }
-    log('${selectedPlace!.latitude}' '${selectedPlace!.longitude}');
   }
 
   Marker getMapMarkerOwnLocation() {
@@ -172,7 +181,7 @@ class AddListingController extends GetxController with StateBottomSheetMixin {
       mapController.animateCamera(CameraUpdate.newLatLng(currentLocation!));
       setMarkerForSelectedPlace();
     } catch (error) {
-      log("Error fetching location: $error");
+      // log("Error fetching location: $error");
     }
   }
 
@@ -189,12 +198,14 @@ class AddListingController extends GetxController with StateBottomSheetMixin {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return Future.error('AppLocalization.getLabels.locationPermissionsDenied');
+        return Future.error(
+            'AppLocalization.getLabels.locationPermissionsDenied');
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      return Future.error('AppLocalization.getLabels.locationPermissionsPermanentlyDenied');
+      return Future.error(
+          'AppLocalization.getLabels.locationPermissionsPermanentlyDenied');
     }
 
     return await Geolocator.getCurrentPosition();
@@ -205,9 +216,11 @@ class AddListingController extends GetxController with StateBottomSheetMixin {
   }
 
   Future<void> fetchPlaceDetails(String placeId) async {
-    const detailsUrl = 'https://maps.googleapis.com/maps/api/place/details/json';
+    const detailsUrl =
+        'https://maps.googleapis.com/maps/api/place/details/json';
 
-    final response = await http.get(Uri.parse('$detailsUrl?place_id=$placeId&key=$googleMapsApiKey'));
+    final response = await http
+        .get(Uri.parse('$detailsUrl?place_id=$placeId&key=$googleMapsApiKey'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -218,13 +231,8 @@ class AddListingController extends GetxController with StateBottomSheetMixin {
         final double longitude = location['lng'] as double;
         selectedPlace!.latitude = latitude;
         selectedPlace!.longitude = longitude;
-
-        log('Place ID: $placeId, Latitude: $latitude, Longitude: $longitude');
       }
-    } else {
-      // Handle error
-      log('Error fetching place details: ${response.statusCode}');
-    }
+    } else {}
   }
 
   Future<void> loadCustomMarkerOwn() async {
@@ -237,26 +245,22 @@ class AddListingController extends GetxController with StateBottomSheetMixin {
 
   Future<Uint8List> getBytesFromAsset({String? path, int? width}) async {
     ByteData data = await rootBundle.load(path!);
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
 
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
   }
 
   void addListing(CreateCarListingRequestModel newListing) {
     carListings.add(newListing);
   }
 
-  Future<void> addAndSaveListing(CreateCarListingRequestModel newListing) async {
-    carListings.add(newListing);
-    carListings = carListings;
-    await saveListingsToLocal();
-
-    Get.find<HomeController>().onReady();
-  }
-
   Future<void> saveListingsToLocal() async {
-    await localeManager.setStringListValue(CacheKey.cars, carListings.map((e) => jsonEncode(e.toJson())).toList());
+    await localeManager.setStringListValue(
+        CacheKey.cars, carListings.map((e) => jsonEncode(e.toJson())).toList());
   }
 
   Future<void> loadListingsFromLocal() async {
@@ -266,5 +270,59 @@ class AddListingController extends GetxController with StateBottomSheetMixin {
         .toList();
   }
 
-  
+  Future<void> saveListing() async {
+    try {
+      if ((fKey.currentState?.validate() ?? false) &&
+          selectedImage != null &&
+          selectedPlace != null) {
+        LoadingProgress.start();
+        String? imageUrl = await _uploadImage();
+        final newListing = CreateCarListingRequestModel(
+          name: cModel.text,
+          price: double.tryParse(cPrice.text.replaceAll(',', '.')) ?? 9.90,
+          availability: avaliability,
+          id: const Uuid().v4(),
+          latitude: selectedPlace!.latitude,
+          longitude: selectedPlace!.longitude,
+          eventImage: imageUrl,
+        );
+        await General().saveListingToFirebase(newListing);
+        LoadingProgress.stop();
+
+        if (Get.isRegistered<HomeController>()) {
+          Get.find<HomeController>().onReady();
+        }
+
+        Navigator.popUntil(
+            context, ModalRoute.withName(MainScreensEnum.homeScreen.path));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please fill in all required fields.'),
+          ),
+        );
+      }
+    } catch (e) {
+      LoadingProgress.stop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('An error occurred.'),
+        ),
+      );
+    }
+  }
+
+  Future<String?> _uploadImage() async {
+    try {
+      String folderName = 'car_images';
+      String fileName =
+          '$folderName/car_image_${DateTime.now().millisecondsSinceEpoch}';
+      await _firestoreStorageService.uploadFile(selectedImage!, fileName);
+      String downloadUrl =
+          await _firestoreStorageService.getDownloadURL(fileName);
+      return downloadUrl;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

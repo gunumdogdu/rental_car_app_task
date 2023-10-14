@@ -10,7 +10,8 @@ class ListingDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
-      init: ListingDetailController(id: ModalRoute.of(context)!.settings.arguments as int),
+      init: ListingDetailController(
+          id: ModalRoute.of(context)!.settings.arguments as String),
       builder: (_) => const ListingDetail(),
     );
   }

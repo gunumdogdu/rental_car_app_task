@@ -19,3 +19,5 @@ enum SocketStatus {
   connectTimeout,
   disconnect,
 }
+
+enum FireBaseCollectionEnums { listings }

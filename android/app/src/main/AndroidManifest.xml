@@ -10,7 +10,7 @@
         android:label="rental_car_app_task"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCo22d6P7puqi3MDBPv0XFWVTi1VgqrkbQ"/>  
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCXvSz27EpRWasiwkuUDuKpwWDJAEd4lvU"/>  
         <activity
             android:name=".MainActivity"
             android:exported="true"

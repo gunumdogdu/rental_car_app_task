@@ -41,7 +41,8 @@ class AddListing extends GetView<AddListingController> {
                 ),
                 body: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: paddingL, vertical: paddingL),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: paddingL, vertical: paddingL),
                     child: Form(
                       key: controller.fKey,
                       child: Column(
@@ -55,7 +56,8 @@ class AddListing extends GetView<AddListingController> {
                               child: DecoratedBox(
                                   decoration: BoxDecoration(
                                     color: AppColors.azureishWhite,
-                                    borderRadius: BorderRadius.circular(radiusM),
+                                    borderRadius:
+                                        BorderRadius.circular(radiusM),
                                     image: controller.selectedImage == null
                                         ? null
                                         : DecorationImage(
@@ -67,7 +69,8 @@ class AddListing extends GetView<AddListingController> {
                                   ),
                                   child: controller.selectedImage == null
                                       ? Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             Icon(
                                               Icons.camera_alt,
@@ -89,7 +92,8 @@ class AddListing extends GetView<AddListingController> {
                           CustomTextFormField(
                             controller: controller.cModel,
                             textInputAction: TextInputAction.next,
-                            validator: (_) => controller.cModel.text.isNotEmptyController(),
+                            validator: (_) =>
+                                controller.cModel.text.isNotEmptyController(),
                             hintText: '(Toyota Corolla, Automatic, 2016)',
                           ),
                           const SizedBox(height: paddingM),
@@ -98,8 +102,11 @@ class AddListing extends GetView<AddListingController> {
                           CustomTextFormField(
                             controller: controller.cPrice,
                             textInputAction: TextInputAction.next,
-                            textInputType: const TextInputType.numberWithOptions(),
-                            validator: (_) => controller.cPrice.text.replaceAll(',', '.').isValidPrice(),
+                            textInputType:
+                                const TextInputType.numberWithOptions(),
+                            validator: (_) => controller.cPrice.text
+                                .replaceAll(',', '.')
+                                .isValidPrice(),
                             hintText: ' \$25',
                           ),
                           const SizedBox(height: paddingM),
@@ -123,22 +130,11 @@ class AddListing extends GetView<AddListingController> {
                           ),
                           const SizedBox(height: paddingM),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: paddingL),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: paddingL),
                             child: BaseButton(
-                              onPressed: () async {
-                                if (controller.fKey.currentState?.validate() ?? false) {
-                                  final newListing = CreateCarListingRequestModel(
-                                      name: controller.cModel.text,
-                                      price: double.tryParse(controller.cPrice.text.replaceAll(',', '.')) ?? 9.90,
-                                      availability: controller.avaliability,
-                                      id: int.tryParse(const Uuid().v4()) ?? Random().nextInt(999),
-                                      latitude: controller.selectedPlace!.latitude,
-                                      longitude: controller.selectedPlace!.longitude,
-                                      eventImage: controller.selectedImage);
-                                  await controller.addAndSaveListing(newListing);
-                                  Navigator.pop(context, MainScreensEnum.homeScreen.path);
-                                }
-                              },
+                              onPressed: () async =>
+                                  await controller.saveListing(),
                               text: 'Save Listing',
                             ),
                           ),
